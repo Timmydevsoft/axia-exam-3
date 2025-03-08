@@ -1,21 +1,26 @@
 import handleError from "../middleware/error.middleware.js";
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 const createPost = async (req, res, next) => {
   try {
     const { title, text_body } = req.body
     if (!title, !text_body) {
       return next(handleError(401, "title, body required"))
     }
+    // const{posts, ...rest} = await User.findById(req.params)
+    console.log(req.id)
     const newUser = new Post({
       title,
       text_body,
       userId: req.id
     });
     await newUser.save()
+   
     return res.status(201).json("post creacted succesfully");
   }
   catch (err) {
-    next(err)
+    console.log(err)
+    // next(err)
   }
 }
 
@@ -70,11 +75,12 @@ const deletePost = async (req, res, next) => {
     const availablePost = await Post.findById(id)
     if (!availablePost) return res.status(400).json({ message: "No such post" })
     if (availablePost.userId.toString() !== req.id.toString()) return next(handleError(401, "You can only delete your post"))
-    await Post.findByIdAndDelete(id)
+    await availablePost.deleteOne()
     return res.status(200).json({ message: "Deleted successfully" })
   }
 
   catch (err) {
+    console.log(err)
     next(err)
   }
 }

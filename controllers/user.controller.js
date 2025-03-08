@@ -28,9 +28,12 @@ const deleteUser = async (req, res, next) => {
   try {
     if (req.id != req.params.id) return next(handleError(401, "You can only delete your own account"));
     const isAuser = await User.findById(req.params.id)
-    if(!isAuser) return res.status(403).json({message:"No such user"})
-     await isAuser.deleteOne()
-     return res.status(200).json({message: "Account deleted successfully"})
+    if(!isAuser){
+      return res.status(403).json({message:"No such user"})
+    }
+    await isAuser.deleteOne()
+    
+    return res.status(200).json({message: "Account deleted successfully"})
   } catch (err) {
     next(err);
   }
